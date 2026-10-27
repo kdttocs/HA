@@ -1,0 +1,63 @@
+name: Hark HA Gateway
+version: "1.2.1"
+slug: hark_gateway
+description: Hark's printing and home-network helper. Looks freely, changes only with your approval. No pasting needed.
+url: https://github.com/kdttocs/HA
+arch: [aarch64, amd64, armv7]
+init: false
+startup: application
+boot: auto
+# host_network: needed to see your home network (device discovery, mDNS/SSDP multicast, ARP, printers).
+# homeassistant_api: needed for the command events, result sensors, kill switch and audit log.
+# Deliberately NOT requested: hassio_api (Supervisor control), docker_api, full_access, privileged, devices, ports.
+host_network: true
+homeassistant_api: true
+apparmor: true
+options:
+  gateway_secret: ""
+  enabled: true
+  reset_pairing: false
+  tool_discovery: true
+  tool_port_scan: true
+  tool_http: true
+  tool_probe: true
+  tool_dns: true
+  tool_snmp: true
+  tool_speedtest: true
+  tool_ha_states: true
+  tool_opnsense: true
+  tool_wol: true
+  tool_ssh: true
+  tool_ha_service: true
+  daily_doc_jobs: 50
+  daily_doc_pages: 500
+  max_pages_per_job: 100
+  daily_receipts: 200
+schema:
+  gateway_secret: "password?"
+  enabled: bool
+  reset_pairing: bool
+  site: "url?"
+  opnsense_host: "str?"
+  opnsense_key: "password?"
+  opnsense_secret: "password?"
+  tool_discovery: bool
+  tool_port_scan: bool
+  tool_http: bool
+  tool_probe: bool
+  tool_dns: bool
+  tool_snmp: bool
+  tool_speedtest: bool
+  tool_ha_states: bool
+  tool_opnsense: bool
+  tool_wol: bool
+  tool_ssh: bool
+  tool_ha_service: bool
+  daily_doc_jobs: "int(1,1000)"
+  daily_doc_pages: "int(1,10000)"
+  max_pages_per_job: "int(1,2000)"
+  daily_receipts: "int(1,5000)"
+  printer_ip: "str?"
+  doc_printer_ip: "str?"
+  doc_printer_model: "str?"
+  print_token: "password?"
