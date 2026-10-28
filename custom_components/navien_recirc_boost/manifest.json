@@ -10,5 +10,5 @@
   "issue_tracker": "https://github.com/kdttocs/HA/issues",
   "loggers": ["custom_components.navien_recirc_boost"],
   "requirements": ["paho-mqtt>=1.6.1"],
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

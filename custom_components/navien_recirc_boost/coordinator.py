@@ -273,6 +273,13 @@ class NavienRecircCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         await self._write(enabled, [day])
         await self.async_refresh_schedule()
 
+    async def async_set_week(self, enabled: bool, days: list[dict[str, Any]]) -> None:
+        """Set the schedule on/off and replace the given days (the others are left alone)."""
+        schedule = await self.async_live_schedule()
+        # The heater accepts a partial list; with no day changes, send the whole week back.
+        await self._write(enabled, days or schedule)
+        await self.async_refresh_schedule()
+
     async def _write(self, enabled: bool, schedule: list[dict[str, Any]]) -> None:
         try:
             await self.client.async_write_schedule(self.channel_number, enabled, schedule)

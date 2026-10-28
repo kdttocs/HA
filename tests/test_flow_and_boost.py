@@ -125,18 +125,33 @@ async def test_options_flow_settings_and_edit_day(hass: HomeAssistant, fake_clie
     assert entry.options["stop_offset"] == 3
 
     r = await hass.config_entries.options.async_init(entry.entry_id)
-    r = await hass.config_entries.options.async_configure(r["flow_id"], {"next_step_id": "pick_day"})
-    assert r["step_id"] == "pick_day"
-    r = await hass.config_entries.options.async_configure(r["flow_id"], {"day": "7"})
-    assert r["step_id"] == "edit_day"
-    bad = await hass.config_entries.options.async_configure(r["flow_id"], {"windows": "nonsense"})
-    assert bad["errors"] == {"windows": "bad_windows"}
-    done = await hass.config_entries.options.async_configure(r["flow_id"], {"windows": "07:00-12:00, 17:00-22:30"})
+    r = await hass.config_entries.options.async_configure(r["flow_id"], {"next_step_id": "schedule"})
+    assert r["step_id"] == "schedule"
+    week = {"enabled": True, "sunday": "08:00-10:00, 15:00-22:00", "monday": "05:00-09:00, 16:30-22:00",
+            "tuesday": "05:00-09:00, 16:30-22:00", "wednesday": "05:00-09:00, 16:30-22:00",
+            "thursday": "05:00-09:00, 16:30-22:00", "friday": "05:00-09:00, 16:30-23:00", "saturday": "08:00-23:00"}
+    defaults = {str(k.schema): k.default() for k in r["data_schema"].schema}
+    assert defaults == week
+    writes_before = len(client.writes)
+    bad = await hass.config_entries.options.async_configure(r["flow_id"], {**week, "monday": "nonsense"})
+    assert bad["errors"] == {"monday": "bad_windows"}
+    assert len(client.writes) == writes_before
+    done = await hass.config_entries.options.async_configure(
+        r["flow_id"], {**week, "saturday": "07:00-12:00, 17:00-22:30", "sunday": "off"})
     assert done["type"] is FlowResultType.CREATE_ENTRY
     enabled, sent = client.writes[-1]
-    assert enabled is True and len(sent) == 1 and sent[0]["day"] == 7
-    assert sent[0]["schdList"][-1] == {"num": 4, "hh": 22, "mm": 30, "flag": 2}
-    assert hass.states.get("sensor.npe2_recirc_boost_schedule").attributes["saturday"] == "07:00-12:00, 17:00-22:30"
+    assert enabled is True and [d["day"] for d in sent] == [1, 7]
+    assert sent[1]["schdList"][-1] == {"num": 4, "hh": 22, "mm": 30, "flag": 2}
+    attrs = hass.states.get("sensor.npe2_recirc_boost_schedule").attributes
+    assert attrs["saturday"] == "07:00-12:00, 17:00-22:30" and attrs["sunday"] == "off"
+
+    # Nothing changed except turning the schedule off: the whole week goes back with "off".
+    r = await hass.config_entries.options.async_init(entry.entry_id)
+    r = await hass.config_entries.options.async_configure(r["flow_id"], {"next_step_id": "schedule"})
+    cur = {str(k.schema): k.default() for k in r["data_schema"].schema}
+    done = await hass.config_entries.options.async_configure(r["flow_id"], {**cur, "enabled": False})
+    assert done["type"] is FlowResultType.CREATE_ENTRY
+    assert client.writes[-1][0] is False and len(client.writes[-1][1]) == 7
 
 
 async def test_services_and_switch_and_number(hass: HomeAssistant, fake_client):

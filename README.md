@@ -59,8 +59,9 @@ safety cap), `navien_recirc_boost.stop_boost`, `navien_recirc_boost.refresh_sche
 ### Settings
 Settings > Devices & services > Navien Recirc Boost > **Configure**:
 - **Boost settings**: stop offset (degrees below target, e.g. 3, 4, 5), extra run time, safety cap.
-- **Edit the weekly schedule**: pick a day, then type its windows (24-hour clock, up to 4 windows, or `off`).
-  The change is sent to the heater right away.
+- **Weekly schedule**: shows the heater's whole week as read from the heater, one line per day, plus a
+  Schedule on switch. Edit any day (24-hour clock, up to 4 windows like `05:00-09:00, 16:30-22:00`, or `off`)
+  and submit; only the days you changed are sent to the heater, right away.
 
 ### Notes
 - It signs in to NaviLink on its own and does not need any other Navien integration. It can run alongside
