@@ -1,0 +1,192 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Sign in to NaviLink",
+        "description": "Use the same email and password as the NaviLink phone app.",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        }
+      },
+      "pick_device": {
+        "title": "Choose the heater",
+        "data": {
+          "device_index": "Heater"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Sign in again",
+        "description": "NaviLink refused the saved password for {username}. Enter the current one.",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "NaviLink did not accept that email and password.",
+      "cannot_connect": "Could not reach NaviLink. Try again in a minute.",
+      "no_devices": "No heaters were found on this NaviLink account.",
+      "unknown": "Something unexpected went wrong. Check the logs."
+    },
+    "abort": {
+      "already_configured": "This heater is already set up.",
+      "reauth_successful": "Signed in again."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Navien Recirc Boost",
+        "menu_options": {
+          "boost_settings": "Boost settings",
+          "pick_day": "Edit the weekly schedule"
+        }
+      },
+      "boost_settings": {
+        "title": "Boost settings",
+        "description": "A boost runs the recirculation pump until the water coming back to the heater is within the stop offset of the heater's target temperature, then runs the extra minutes. The safety cap is the longest a boost can run.",
+        "data": {
+          "stop_offset": "Stop offset (degrees below target)",
+          "extra_minutes": "Extra run time",
+          "max_minutes": "Safety cap"
+        }
+      },
+      "pick_day": {
+        "title": "Edit the weekly schedule",
+        "description": "Pick a day. These are the heater's own recirculation windows, read just now.",
+        "data": {
+          "day": "Day"
+        }
+      },
+      "edit_day": {
+        "title": "{day}",
+        "description": "Type the windows when the pump should run, like 05:00-09:00, 16:30-22:00 (24-hour clock, up to 4 windows). Type off for none. Saving sends this day to the heater right away. {error}",
+        "data": {
+          "windows": "Windows"
+        }
+      }
+    },
+    "error": {
+      "bad_windows": "That isn't a valid schedule.",
+      "write_failed": "The heater did not accept the change."
+    },
+    "abort": {
+      "not_loaded": "The integration isn't connected right now, so the schedule can't be edited."
+    }
+  },
+  "entity": {
+    "button": {
+      "boost": {
+        "name": "Boost"
+      },
+      "stop_boost": {
+        "name": "Stop boost"
+      }
+    },
+    "binary_sensor": {
+      "boost_running": {
+        "name": "Boost running"
+      },
+      "connected": {
+        "name": "NaviLink connected"
+      }
+    },
+    "sensor": {
+      "schedule": {
+        "name": "Schedule",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "boosts_today": {
+        "name": "Boosts today"
+      },
+      "boosts_total": {
+        "name": "Boosts total"
+      },
+      "last_boost": {
+        "name": "Last boost"
+      },
+      "return_temperature": {
+        "name": "Return water temperature"
+      },
+      "outlet_temperature": {
+        "name": "Outlet temperature"
+      }
+    },
+    "switch": {
+      "weekly_schedule": {
+        "name": "Weekly schedule"
+      }
+    },
+    "number": {
+      "target_temperature": {
+        "name": "Target temperature"
+      }
+    }
+  },
+  "services": {
+    "boost": {
+      "name": "Boost",
+      "description": "Run the recirculation pump until the loop is hot, then put the weekly schedule back.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Heater",
+          "description": "Only needed if more than one heater is set up."
+        },
+        "stop_offset": {
+          "name": "Stop offset",
+          "description": "Stop when the return water is this many degrees below the heater's target. Leave empty to use the setting."
+        },
+        "extra_minutes": {
+          "name": "Extra minutes",
+          "description": "Keep running this long after the stop point. Leave empty to use the setting."
+        },
+        "max_minutes": {
+          "name": "Safety cap",
+          "description": "Longest the boost may run. Leave empty to use the setting."
+        }
+      }
+    },
+    "stop_boost": {
+      "name": "Stop boost",
+      "description": "Finish a running boost now. The weekly schedule is still put back.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Heater",
+          "description": "Only needed if more than one heater is set up."
+        }
+      }
+    },
+    "refresh_schedule": {
+      "name": "Refresh schedule",
+      "description": "Read the weekly schedule from the heater now.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Heater",
+          "description": "Only needed if more than one heater is set up."
+        }
+      }
+    },
+    "set_day_schedule": {
+      "name": "Set day schedule",
+      "description": "Replace one day's recirculation windows on the heater.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Heater",
+          "description": "Only needed if more than one heater is set up."
+        },
+        "day": {
+          "name": "Day",
+          "description": "The day to change."
+        },
+        "windows": {
+          "name": "Windows",
+          "description": "24-hour windows like 05:00-09:00, 16:30-22:00, or off."
+        }
+      }
+    }
+  }
+}
