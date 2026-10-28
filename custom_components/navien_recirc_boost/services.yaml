@@ -1,0 +1,60 @@
+boost:
+  fields:
+    config_entry_id:
+      selector:
+        config_entry:
+          integration: navien_recirc_boost
+    stop_offset:
+      selector:
+        number:
+          min: 0
+          max: 30
+          unit_of_measurement: degrees
+    extra_minutes:
+      selector:
+        number:
+          min: 0
+          max: 15
+          unit_of_measurement: min
+    max_minutes:
+      selector:
+        number:
+          min: 1
+          max: 60
+          unit_of_measurement: min
+stop_boost:
+  fields:
+    config_entry_id:
+      selector:
+        config_entry:
+          integration: navien_recirc_boost
+refresh_schedule:
+  fields:
+    config_entry_id:
+      selector:
+        config_entry:
+          integration: navien_recirc_boost
+set_day_schedule:
+  fields:
+    config_entry_id:
+      selector:
+        config_entry:
+          integration: navien_recirc_boost
+    day:
+      required: true
+      example: monday
+      selector:
+        select:
+          options:
+            - sunday
+            - monday
+            - tuesday
+            - wednesday
+            - thursday
+            - friday
+            - saturday
+    windows:
+      required: true
+      example: "05:00-09:00, 16:30-22:00"
+      selector:
+        text:
