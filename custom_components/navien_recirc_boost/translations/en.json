@@ -39,8 +39,8 @@
       "init": {
         "title": "Navien Recirc Boost",
         "menu_options": {
-          "boost_settings": "Boost settings",
-          "pick_day": "Edit the weekly schedule"
+          "schedule": "Weekly schedule",
+          "boost_settings": "Boost settings"
         }
       },
       "boost_settings": {
@@ -52,18 +52,18 @@
           "max_minutes": "Safety cap"
         }
       },
-      "pick_day": {
-        "title": "Edit the weekly schedule",
-        "description": "Pick a day. These are the heater's own recirculation windows, read just now.",
+      "schedule": {
+        "title": "Weekly schedule",
+        "description": "The heater's own recirculation windows, read from the heater at {read}. Edit any day: 24-hour clock, up to 4 windows like 05:00-09:00, 16:30-22:00, or off. Submit sends only the days you changed, right away. {error}",
         "data": {
-          "day": "Day"
-        }
-      },
-      "edit_day": {
-        "title": "{day}",
-        "description": "Type the windows when the pump should run, like 05:00-09:00, 16:30-22:00 (24-hour clock, up to 4 windows). Type off for none. Saving sends this day to the heater right away. {error}",
-        "data": {
-          "windows": "Windows"
+          "enabled": "Schedule on",
+          "sunday": "Sunday",
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday"
         }
       }
     },
@@ -72,7 +72,9 @@
       "write_failed": "The heater did not accept the change."
     },
     "abort": {
-      "not_loaded": "The integration isn't connected right now, so the schedule can't be edited."
+      "not_loaded": "The integration isn't connected right now, so the schedule can't be edited.",
+      "boost_running": "A boost is running. Edit the schedule after it finishes.",
+      "no_schedule": "The heater didn't answer, so its schedule isn't known yet. Try again in a minute."
     }
   },
   "entity": {

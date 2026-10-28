@@ -19,6 +19,7 @@ from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.util import dt as dt_util
 
 from .const import (
     CONF_DEVICE_INDEX,
@@ -28,6 +29,7 @@ from .const import (
     CONF_STOP_OFFSET,
     CONF_USERNAME,
     DAY_NAMES,
+    WEEKLY_OFF,
     DEFAULT_EXTRA_MINUTES,
     DEFAULT_MAX_MINUTES,
     DEFAULT_STOP_OFFSET,
@@ -196,13 +198,9 @@ def _minutes(minimum: int, maximum: int) -> selector.NumberSelector:
 class NavienRecircOptionsFlow(OptionsFlow):
     """Boost settings and the schedule editor."""
 
-    def __init__(self) -> None:
-        """Initialize."""
-        self._day: int = 2
-
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Choose what to change."""
-        return self.async_show_menu(step_id="init", menu_options=["boost_settings", "pick_day"])
+        return self.async_show_menu(step_id="init", menu_options=["schedule", "boost_settings"])
 
     async def async_step_boost_settings(
         self, user_input: dict[str, Any] | None = None
@@ -239,60 +237,58 @@ class NavienRecircOptionsFlow(OptionsFlow):
             return None
         return entry.runtime_data
 
-    async def async_step_pick_day(
+    async def async_step_schedule(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Choose the day to edit."""
+        """Show the whole weekly schedule and edit any day on one screen."""
         coord = self._coordinator()
         if coord is None:
             return self.async_abort(reason="not_loaded")
-        if user_input is not None:
-            self._day = int(user_input["day"])
-            return await self.async_step_edit_day()
-        await coord.async_refresh_schedule()
-        current = describe(coord.schedule or [])
-        options = [
-            selector.SelectOptionDict(value=str(num), label=f"{name.title()}: {current[name]}")
-            for num, name in DAY_NAMES.items()
-        ]
-        return self.async_show_form(
-            step_id="pick_day",
-            data_schema=vol.Schema(
-                {vol.Required("day", default="2"): selector.SelectSelector(
-                    selector.SelectSelectorConfig(options=options, mode=selector.SelectSelectorMode.LIST)
-                )}
-            ),
-        )
-
-    async def async_step_edit_day(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
-        """Type the day's windows, e.g. 05:00-09:00, 16:30-22:00."""
-        coord = self._coordinator()
-        if coord is None:
-            return self.async_abort(reason="not_loaded")
-        name = DAY_NAMES[self._day]
+        if coord.boost.running:
+            return self.async_abort(reason="boost_running")
         errors: dict[str, str] = {}
-        placeholders = {"day": name.title(), "error": ""}
-        current = describe(coord.schedule or [])[name]
-        if user_input is not None and "windows" in user_input:
-            try:
-                windows = parse_windows(user_input["windows"])
-            except ScheduleError as err:
-                errors["windows"] = "bad_windows"
-                placeholders["error"] = str(err)
-            else:
+        placeholders = {"error": "", "read": ""}
+        if user_input is None:
+            await coord.async_refresh_schedule()
+        if not coord.schedule:
+            return self.async_abort(reason="no_schedule")
+        current = describe(coord.schedule)
+        enabled_now = coord.weekly_control != WEEKLY_OFF
+        if user_input is not None:
+            changed: list[dict[str, Any]] = []
+            for num, name in DAY_NAMES.items():
+                text = user_input.get(name, "")
                 try:
-                    await coord.async_set_day(build_day(self._day, windows))
-                except HomeAssistantError as err:
-                    errors["base"] = "write_failed"
-                    placeholders["error"] = str(err)
-                else:
+                    windows = parse_windows(text)
+                except ScheduleError as err:
+                    errors[name] = "bad_windows"
+                    placeholders["error"] = f"{name.title()}: {err}"
+                    continue
+                if build_day(num, windows) != build_day(num, parse_windows(current[name])):
+                    changed.append(build_day(num, windows))
+            enabled = bool(user_input.get("enabled", enabled_now))
+            if not errors:
+                if changed or enabled != enabled_now:
+                    try:
+                        await coord.async_set_week(enabled, changed)
+                    except HomeAssistantError as err:
+                        errors["base"] = "write_failed"
+                        placeholders["error"] = str(err)
+                if not errors:
                     return self.async_create_entry(data=dict(self.config_entry.options))
-            current = user_input["windows"]
+            values = user_input
+        else:
+            values = {"enabled": enabled_now, **current}
+        if coord.schedule_read_at:
+            placeholders["read"] = dt_util.as_local(coord.schedule_read_at).strftime("%-I:%M %p")
+        schema: dict[Any, Any] = {
+            vol.Required("enabled", default=values.get("enabled", enabled_now)): selector.BooleanSelector()
+        }
+        for name in DAY_NAMES.values():
+            schema[vol.Required(name, default=values.get(name, current[name]))] = selector.TextSelector()
         return self.async_show_form(
-            step_id="edit_day",
-            data_schema=vol.Schema({vol.Required("windows", default=current): str}),
+            step_id="schedule",
+            data_schema=vol.Schema(schema),
             description_placeholders=placeholders,
             errors=errors,
         )
