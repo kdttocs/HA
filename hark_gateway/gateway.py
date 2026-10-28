@@ -20,7 +20,7 @@ os.umask(0o077)   # everything this app writes in /data is private to it
 
 import haapi, tools, receipt, docs, pairing, ed25519, caps  # noqa: E402
 
-VERSION = "1.2.1"
+VERSION = "1.3.0"
 OPTS = {}
 try:
     OPTS = json.load(open(os.environ.get("OPTIONS_FILE", "/data/options.json")))
@@ -97,6 +97,8 @@ TOOL_OPTION = {  # tool -> option that switches it on/off
     "dns": "tool_dns", "snmp": "tool_snmp", "speedtest": "tool_speedtest", "ha_states": "tool_ha_states",
     "firewall": "tool_opnsense", "opnsense": "tool_opnsense", "wol": "tool_wol", "ssh": "tool_ssh",
     "ha_service": "tool_ha_service",
+    "stage": "tool_ha_config", "ha_file_read": "tool_ha_config", "lovelace_get": "tool_ha_config",
+    "ha_check_config": "tool_ha_config", "ha_file_write": "tool_ha_config", "lovelace_save": "tool_ha_config",
 }
 ALWAYS_ON = {"status", "audit", "ssh_pubkey", "print_doc", "provision"}   # answered even with the kill switch off
 
@@ -288,7 +290,7 @@ def verify(c):
 def target_of(tool, args):
     if args.get("url"):
         return tools.scrub_url(args["url"])
-    for k in ("host", "mac", "entity_id", "path", "network", "name", "match"):
+    for k in ("host", "mac", "entity_id", "path", "url_path", "network", "name", "match"):
         if args.get(k):
             return str(args[k])[:120]
     if tool == "ha_service":
@@ -299,7 +301,7 @@ def target_of(tool, args):
 def summary(res):
     if not isinstance(res, dict):
         return str(res)[:150]
-    for k in ("found", "open", "status", "exit_code", "mbps", "avg_ms", "count", "answers", "changed"):
+    for k in ("found", "open", "status", "exit_code", "mbps", "avg_ms", "count", "answers", "changed", "written", "saved", "complete", "sha256"):
         if k in res:
             v = res[k]
             if isinstance(v, list):

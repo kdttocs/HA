@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.3.0
+- New: Hark can update Home Assistant's configuration and dashboards, only with your approval.
+  - Reads (on its own): configuration.yaml and packages/*.yaml (password-looking lines blanked), a dashboard's
+    outline, and Home Assistant's own configuration check.
+  - Changes (each needs your yes): write configuration.yaml or packages/<name>.yaml, and replace one dashboard.
+    The approval names a fingerprint (SHA-256) of the exact content, so nothing else can be written under it. The
+    old file goes to hark_backups/ in your config folder; the old dashboard to the app's own storage (last 20 kept).
+  - Never: secrets.yaml, .storage, custom_components, or any other file.
+- The app now maps your Home Assistant config folder (read/write) for this. Switch it all off with the new
+  `tool_ha_config` option.
+
 ## 1.2.1
 - Fix: the receipt printer search no longer prints junk pages on page (laser/inkjet) printers. It skips the
   document printer and any host that answers on IPP (port 631) before sending ESC/POS bytes, and forgets a

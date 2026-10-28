@@ -33,15 +33,18 @@ PUBLIC_DNS = {"1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4", "9.9.9.9", "149.112.11
 SPEEDTEST_URL = "https://speed.cloudflare.com/__down?bytes={n}"
 HOST_RE = re.compile(r"^(?=.{1,253}$)[A-Za-z0-9](?:[A-Za-z0-9-]{0,62})(?:\.[A-Za-z0-9-]{1,63})*\.?$")
 
-CHANGE_TOOLS = {"wol", "ssh", "ha_service"}
+CHANGE_TOOLS = {"wol", "ssh", "ha_service", "ha_file_write", "lovelace_save"}
 ALL_TOOLS = ["ping_sweep", "port_scan", "mdns", "ssdp", "http", "probe", "dns", "snmp", "latency", "speedtest",
-             "ha_states", "status", "audit", "ssh_pubkey", "firewall", "wol", "ssh", "ha_service"]
+             "ha_states", "status", "audit", "ssh_pubkey", "firewall", "wol", "ssh", "ha_service",
+             "stage", "ha_file_read", "lovelace_get", "ha_check_config", "ha_file_write", "lovelace_save"]
 # tool -> list of (max runs, per seconds) windows; every window must have room
 LIMITS = {"ping_sweep": [(2, 60), (20, 3600)], "port_scan": [(3, 60), (30, 3600)], "mdns": [(4, 60)], "ssdp": [(4, 60)],
           "http": [(30, 60), (600, 3600)], "probe": [(30, 60), (600, 3600)], "dns": [(30, 60)], "snmp": [(20, 60), (400, 3600)],
           "latency": [(10, 60)], "speedtest": [(2, 600), (6, 86400)], "ha_states": [(20, 60)], "status": [(60, 60)],
           "audit": [(20, 60)], "ssh_pubkey": [(10, 60)], "firewall": [(20, 60)], "opnsense": [(20, 60)], "wol": [(10, 60)], "ssh": [(10, 60)],
-          "ha_service": [(20, 60)], "print_doc": [(30, 60)]}
+          "ha_service": [(20, 60)], "print_doc": [(30, 60)],
+          "stage": [(64, 60)], "ha_file_read": [(20, 60)], "lovelace_get": [(10, 60)], "ha_check_config": [(4, 60)],
+          "ha_file_write": [(10, 60)], "lovelace_save": [(5, 60)]}
 TOP_PORTS = [21, 22, 23, 25, 53, 67, 68, 69, 80, 81, 110, 111, 123, 135, 137, 138, 139, 143, 161, 389, 443, 445,
              465, 500, 515, 548, 554, 587, 631, 636, 873, 902, 993, 995, 1080, 1194, 1433, 1521, 1723, 1883, 1900,
              2049, 2082, 2083, 2086, 2181, 2375, 2376, 3000, 3128, 3260, 3306, 3389, 3478, 3689, 4443, 4500, 5000,
@@ -1032,6 +1035,15 @@ def t_status(a, ctx):
             "ssh_key": bool(shutil.which("ssh-keygen")), "time": time.strftime("%Y-%m-%dT%H:%M:%S%z")}
 
 
+def _cfg(fn, a):
+    """Home Assistant configuration tools (hacfg.py); their refusals become ToolError like every other tool."""
+    import hacfg
+    try:
+        return getattr(hacfg, fn)(a)
+    except hacfg.CfgError as e:
+        raise ToolError(str(e))
+
+
 DISPATCH = {
     "ping_sweep": lambda a, c: t_ping_sweep(a), "port_scan": lambda a, c: t_port_scan(a),
     "mdns": lambda a, c: t_mdns(a), "ssdp": lambda a, c: t_ssdp(a), "http": lambda a, c: t_http(a),
@@ -1042,6 +1054,9 @@ DISPATCH = {
     "opnsense": lambda a, c: t_firewall(a, c["opts"]),   # older name of the same tool
     "wol": lambda a, c: t_wol(a), "ssh": lambda a, c: t_ssh(a), "ha_service": lambda a, c: t_ha_service(a),
     "status": lambda a, c: t_status(a, c),
+    "stage": lambda a, c: _cfg("t_stage", a), "ha_file_read": lambda a, c: _cfg("t_file_read", a),
+    "lovelace_get": lambda a, c: _cfg("t_lovelace_get", a), "ha_check_config": lambda a, c: _cfg("t_check_config", a),
+    "ha_file_write": lambda a, c: _cfg("t_file_write", a), "lovelace_save": lambda a, c: _cfg("t_lovelace_save", a),
     "print_doc": lambda a, c: c["wake_docs"](a),   # Hark's nudge: check the document queue now (job stays on the Worker)
 }
 

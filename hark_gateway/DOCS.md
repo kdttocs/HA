@@ -115,6 +115,13 @@ The app makes its own SSH key. Add the `ssh_public_key` attribute of `sensor.har
 `~/.ssh/authorized_keys` on a machine you want Hark to reach. The first connection remembers the machine's host key;
 a changed host key is refused. Every SSH command needs your yes.
 
+## Home Assistant configuration and dashboards (1.3.0)
+Hark can read `configuration.yaml` and files in `packages/`, see a dashboard's outline, and run Home Assistant's
+configuration check on its own. Writing `configuration.yaml` or `packages/<name>.yaml`, or replacing a dashboard,
+needs your yes every time; the approval carries a fingerprint of the exact content. Old files are copied to
+`hark_backups/` in your config folder first. `secrets.yaml`, `.storage` and every other file are off limits.
+Turn this off with `tool_ha_config: false`.
+
 ## Options
 
 | Option | What it does |
