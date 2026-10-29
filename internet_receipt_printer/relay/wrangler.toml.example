@@ -1,0 +1,41 @@
+# Copy this file to wrangler.toml, then follow DEPLOY.md. Everything here works on Cloudflare's free plan.
+name = "receipt-relay"              # your Worker's name; it becomes the first part of your relay's address
+main = "worker.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+# One SQLite-backed Durable Object holds the queue (SQLite Durable Objects are included in the free plan).
+[[durable_objects.bindings]]
+name = "STORE"
+class_name = "Store"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Store"]
+
+[vars]
+RECEIPT_FORM = "off"                # switch to "on" when you are ready: anyone with the link can then type a message that prints
+SITE_TITLE = "Print Something"      # page title, also printed at the top of each receipt
+TIMEZONE = "UTC"                    # e.g. "Europe/Berlin": used for receipt timestamps and quiet hours
+MAX_LEN = "280"                     # longest message, in characters
+PER_IP_COOLDOWN_SEC = "60"          # seconds one visitor must wait between messages
+PER_IP_HOURLY = "4"
+PER_IP_DAILY = "10"
+GLOBAL_PER_MIN = "4"                # site-wide burst cap
+GLOBAL_HOURLY = "30"                # hitting this pauses the form for LOCKDOWN_HOURS
+GLOBAL_DAILY = "150"                # paper guard: max prints per day
+MAX_WAITING = "40"                  # max messages waiting in line
+STRIKES_PER_HOUR = "15"             # refused attempts from one connection before a 24 h ban
+LOCKDOWN_STRIKES_PER_HOUR = "150"
+LOCKDOWN_HOURS = "6"
+POW_BITS = "18"                     # proof-of-work difficulty (~0.3-1 s on a phone)
+POW_BITS_BUSY = "20"
+QUIET_START_HOUR = "23"             # local hour printing pauses (messages wait); set both to -1 for none
+QUIET_END_HOUR = "7"
+TURNSTILE_SITE_KEY = ""             # optional Cloudflare Turnstile bot check
+EXTRA_BLOCKLIST = ""                # optional extra words to refuse, comma separated
+
+# Secrets: set each with `npx wrangler secret put NAME` (never put them in this file).
+#   RECEIPT_TOKEN     the app's queue_token: the only key to the receipt queue
+#   IP_SALT           any long random text; used to hash visitor addresses for rate limits
+#   TURNSTILE_SECRET  optional, pairs with TURNSTILE_SITE_KEY

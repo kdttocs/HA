@@ -1,0 +1,31 @@
+name: Internet Receipt Printer
+version: "1.0.2"
+slug: internet_receipt_printer
+description: Prints messages from your public web form (your own free Cloudflare relay) on a network ESC/POS receipt printer.
+url: https://github.com/kdttocs/HA/tree/main/internet_receipt_printer
+arch: [aarch64, amd64]
+init: false
+startup: application
+boot: auto
+# host_network: needed to find the receipt printer on your home network (and to reach it by its home address).
+# homeassistant_api: to show the printer's status in sensor.internet_receipt_printer and, only while the optional
+#   pairing window is open, to publish a one-time public key and read the sealed answer. Nothing else is read.
+# Deliberately NOT requested: hassio_api, docker_api, full_access, privileged, devices, ports, any folder maps.
+host_network: true
+homeassistant_api: true
+apparmor: true
+options:
+  queue_url: ""
+  queue_token: ""
+  daily_receipts: 200
+  hello_receipt: true
+  pairing: true
+  reset_pairing: false
+schema:
+  queue_url: "str?"
+  queue_token: "password?"
+  printer_ip: "str?"
+  daily_receipts: "int(1,5000)"
+  hello_receipt: bool
+  pairing: bool
+  reset_pairing: bool

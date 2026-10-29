@@ -1,0 +1,22 @@
+configuration:
+  queue_url:
+    name: Relay address
+    description: Your receipt relay's address (https://...). Leave empty to pair with Hark instead.
+  queue_token:
+    name: Relay token
+    description: Your relay's RECEIPT_TOKEN. Leave empty to pair with Hark instead.
+  printer_ip:
+    name: Printer address
+    description: Optional. Only if the receipt printer isn't found by itself (a home address like 10.20.30.40).
+  daily_receipts:
+    name: Receipts per day
+    description: Most receipts printed per day (paper guard). Extra messages wait on the relay until tomorrow.
+  hello_receipt:
+    name: Hello receipt
+    description: Print one short "Hello" receipt the first time the printer is found.
+  pairing:
+    name: Allow pairing
+    description: When the relay address and token are empty, open a 30-minute window so Hark can pair the app.
+  reset_pairing:
+    name: Pair again
+    description: Switch on, save and restart to forget the saved pairing and pair again (once). Switch it off afterwards.

@@ -1,0 +1,23 @@
+# Settings for the Hark Home Assistant Gateway relay. Works on Cloudflare's free plan.
+# The "Deploy to Cloudflare" button reads this file; for a manual setup see DEPLOY.md ("Advanced").
+name = "hark-relay"                 # your relay's name; it becomes the first part of its address
+main = "worker.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+preview_urls = false                # no extra per-version addresses for this Worker
+
+# One SQLite-backed Durable Object holds the queues and the relay's own secrets
+# (SQLite Durable Objects are included in the free plan).
+[[durable_objects.bindings]]
+name = "STORE"
+class_name = "Store"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Store"]
+
+# Secrets (never put them in this file):
+#   GW_APPROVAL_PUB   required: Hark's approval PUBLIC key (64 hex characters). Ask Hark for it.
+# The relay makes the rest itself when Hark claims it (GATEWAY_SECRET, DOC_TOKEN, PRINT_TOKEN, IP_SALT).
+# You may still set any of them by hand (`npx wrangler secret put NAME`); a value set by hand always wins.
+# PRINT_TOKEN was called BRIDGE_TOKEN in older copies; that name still works.

@@ -1,0 +1,24 @@
+{
+  "name": "hark-relay",
+  "version": "2.0.5",
+  "private": true,
+  "description": "Relay for the Hark Home Assistant Gateway app (Cloudflare Worker + one SQLite Durable Object).",
+  "license": "MIT",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "4.151.1"
+  },
+  "cloudflare": {
+    "bindings": {
+      "GW_APPROVAL_PUB": {
+        "description": "Hark's approval **public** key: 64 letters and digits. Ask Hark for \"the approval public key for my relay\" and paste it here. It is safe to share."
+      },
+      "STORE": {
+        "description": "Storage for the relay's queues and its own secrets. Keep the default."
+      }
+    }
+  }
+}

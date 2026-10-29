@@ -1,0 +1,187 @@
+configuration:
+  gateway_secret:
+    name: Gateway secret
+    description: Leave empty. The app pairs with Hark by itself and keeps the secret privately.
+  enabled:
+    name: Network tools enabled
+    description: Hard on/off switch for all of Hark's network tools (needs a restart). Document printing keeps working.
+  reset_pairing:
+    name: Pair again
+    description: Switch on, save and restart to pair with Hark again (once). Switch it off afterwards.
+  site:
+    name: Relay address
+    description: Your relay's https:// address (from the Deploy to Cloudflare step). Not a secret. The app pairs with Hark through it.
+  router_type:
+    name: Router type
+    description: Your router (OPNsense, pfSense, OpenWrt or UniFi). Leave empty if you don't want Hark to read your router.
+  router_host:
+    name: Router address
+    description: Optional. Empty means your network's default gateway. Set it if your UniFi controller isn't your router.
+  router_port:
+    name: Router port
+    description: Optional. Only if your router's web interface uses a non-standard port.
+  router_scheme:
+    name: Router connection type
+    description: Optional. https (default) or http, for routers without HTTPS.
+  router_user:
+    name: Router user or API key
+    description: The router login name, or the API key for OPNsense (see the Documentation tab for your router).
+  router_password:
+    name: Router password or API secret
+    description: The router password, or the API secret (OPNsense) or API key (pfSense).
+  router_site:
+    name: UniFi site
+    description: UniFi only. The site name; empty means "default".
+  router_cert_sha256:
+    name: Router certificate fingerprint
+    description: Optional. Locks the connection to your router's exact certificate (SHA-256). Ask Hark to read it for you.
+  opnsense_host:
+    name: OPNsense address (older option)
+    description: Older name of Router address. Still works; leave empty if you use the router options above.
+  opnsense_key:
+    name: OPNsense API key (older option)
+    description: Older name of Router user or API key. Still works; leave empty if you use the router options above.
+  opnsense_secret:
+    name: OPNsense API secret (older option)
+    description: Older name of Router password or API secret. Still works; leave empty if you use the router options above.
+  tool_discovery:
+    name: Find devices
+    description: Lets Hark find devices on your network (ping sweep, mDNS, SSDP). Looking only.
+  tool_port_scan:
+    name: Port check
+    description: Lets Hark see which services a device on your network offers. Looking only.
+  tool_http:
+    name: Web requests
+    description: Lets Hark read web pages on your devices. Sending data to a device always needs your yes.
+  tool_probe:
+    name: Probe and response time
+    description: Lets Hark talk to one port on a device and measure response times. It may send a short message to the port (never printer ports) without asking.
+  tool_dns:
+    name: Name lookups (DNS)
+    description: Lets Hark look up names, on your network or well-known public resolvers only.
+  tool_snmp:
+    name: SNMP read
+    description: Lets Hark read device information over SNMP. Read only.
+  tool_speedtest:
+    name: Speed test
+    description: Lets Hark run an internet speed test on request.
+  tool_ha_states:
+    name: Read Home Assistant states
+    description: Lets Hark read your entities' states. Passwords, tokens and locations are hidden.
+  tool_opnsense:
+    name: Router tool (older switch)
+    description: Older name of the Router tool switch. Switching either one off turns the router tool off.
+  tool_router:
+    name: Router tool
+    description: Lets Hark read your router. Router changes and undo always need your yes.
+  tool_wol:
+    name: Wake-on-LAN
+    description: Lets Hark wake a computer on your network. Always needs your yes.
+  tool_ssh:
+    name: SSH commands
+    description: Lets Hark run a command on a computer that trusts the app's SSH key. Always needs your yes.
+  tool_ha_service:
+    name: Home Assistant actions
+    description: Lets Hark call a Home Assistant action (service). Always needs your yes; some are never allowed.
+  tool_ha_config:
+    name: Configuration and dashboards
+    description: Lets Hark read configuration.yaml, packages and dashboards. Writing always needs your yes.
+  tool_inventory:
+    name: Device list
+    description: Lets Hark see the list of known and new devices on your network, and mark one Known or Ignore when you ask.
+  tool_health:
+    name: Internet health readings
+    description: Lets Hark read the internet health sensors on request.
+  tool_checkup:
+    name: Network check-up on request
+    description: Lets Hark run the network check-up whenever you ask.
+  tool_print:
+    name: Receipt notes
+    description: Lets Hark print a short note on your receipt printer (within the daily receipt limit).
+  inventory_enabled:
+    name: Device alerts
+    description: Regularly lists the devices on your network and tells you about new ones.
+  inventory_every_min:
+    name: Device scan interval (minutes)
+    description: How often the device list is refreshed (5 to 240 minutes).
+  inventory_notify:
+    name: New-device notification
+    description: Show a Home Assistant notification when a device never seen before joins your network.
+  inventory_investigate:
+    name: Take a closer look at new devices
+    description: For about 6 seconds, ask a new device its name and which common services it offers (read-only, never a printer's raw print port), so the alert can say what it probably is. Off = the alert uses only the maker and the name your router gives.
+  inventory_phone_notify:
+    name: New-device alert on your phone
+    description: Also send new-device alerts to the phone in "Phone notify service", with Known and Ignore buttons. Needs the Home Assistant companion app.
+  health_enabled:
+    name: Internet health sensors
+    description: Regularly checks whether you're online, how fast it answers and how many test pings are lost.
+  health_every_min:
+    name: Internet check interval (minutes)
+    description: How often the internet health sensors update (1 to 60 minutes).
+  health_targets:
+    name: Internet test addresses
+    description: Optional. Comma separated, chosen from 1.1.1.1, 1.0.0.1, 8.8.8.8, 8.8.4.4, 9.9.9.9, 149.112.112.112.
+  speedtest_daily:
+    name: Nightly speed test
+    description: Run one internet speed test a day and show it in sensor.hark_gateway_download_speed.
+  speedtest_time:
+    name: Speed test time
+    description: When the nightly speed test runs (24-hour time, for example 03:30).
+  speedtest_mb:
+    name: Speed test size (MB)
+    description: How much the speed test downloads (1 to 100 MB). Bigger is more accurate but uses more data.
+  checkup_weekly:
+    name: Weekly network check-up
+    description: Once a week, look for risky open ports, waiting updates and certificates about to expire.
+  checkup_day:
+    name: Check-up day
+    description: Day of the week the check-up runs.
+  checkup_time:
+    name: Check-up time
+    description: When the weekly check-up runs (24-hour time, for example 09:00).
+  checkup_notify:
+    name: Check-up notification
+    description: Show the check-up result as a Home Assistant notification.
+  checkup_cert_hosts:
+    name: Extra certificate checks
+    description: Optional. Extra host or host:port names (comma separated) whose certificates the check-up watches.
+  phone_approval:
+    name: Also approve on my phone
+    description: Every change Hark has approved also needs a tap on Approve in the Home Assistant phone app.
+  phone_notify_service:
+    name: Phone notify service
+    description: Your phone's notify service, for example mobile_app_my_phone. Needed for phone approval and for new-device alerts on your phone.
+  phone_approver_user_id:
+    name: Approver user id
+    description: Optional. Only taps from this Home Assistant user count.
+  phone_approval_timeout_s:
+    name: Phone approval wait (seconds)
+    description: How long to wait for your tap (30 to 900 seconds). No answer means refused.
+  doc_raw_fallback:
+    name: Port 9100 fallback for documents
+    description: If the page printer won't take a PDF over IPP, send it to port 9100. Switch off if it prints gibberish.
+  daily_doc_jobs:
+    name: Documents per day
+    description: Most documents printed per day (paper guard).
+  daily_doc_pages:
+    name: Pages per day
+    description: Most pages printed per day (paper guard).
+  max_pages_per_job:
+    name: Pages per document
+    description: Longest document the app will print, in pages.
+  daily_receipts:
+    name: Receipt notes per day
+    description: Most receipt notes printed per day (paper guard).
+  printer_ip:
+    name: Receipt printer address
+    description: Optional. Only if the receipt printer isn't found by itself (a home address like 10.20.30.40).
+  doc_printer_ip:
+    name: Page printer address
+    description: Optional. Only if the page printer isn't found by itself.
+  doc_printer_model:
+    name: Page printer name
+    description: Optional. Part of the page printer's name, to pick the right one when several are found.
+  print_token:
+    name: Print token (troubleshooting)
+    description: Normally leave empty; the app gets it from your relay by itself.

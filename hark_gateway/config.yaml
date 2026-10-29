@@ -1,0 +1,126 @@
+name: Hark Home Assistant Gateway
+version: "2.0.5"
+slug: hark_gateway
+description: Hark's home-network helper. Looks freely, changes only with your approval. Router tools, device alerts, internet health, on-demand printing.
+url: https://github.com/kdttocs/HA/tree/main/hark_gateway
+arch: [aarch64, amd64]
+init: false
+startup: application
+boot: auto
+# host_network: needed to see your home network (device discovery, mDNS/SSDP multicast, ARP, printers, router).
+# homeassistant_api: needed for the command events, result sensors, kill switch, audit log, alerts and health sensors.
+# homeassistant_config (read/write): lets Hark write configuration.yaml and packages/*.yaml, only with your approval of
+#   the exact content (fingerprint-checked), keeping a copy of the old file in hark_backups/.
+# Deliberately NOT requested: hassio_api (Supervisor control), docker_api, full_access, privileged, devices, ports.
+host_network: true
+homeassistant_api: true
+apparmor: true
+map:
+  - type: homeassistant_config
+    read_only: false
+options:
+  gateway_secret: ""
+  enabled: true
+  reset_pairing: false
+  tool_discovery: true
+  tool_port_scan: true
+  tool_http: true
+  tool_probe: true
+  tool_dns: true
+  tool_snmp: true
+  tool_speedtest: true
+  tool_ha_states: true
+  tool_opnsense: true
+  tool_router: true
+  tool_wol: true
+  tool_ssh: true
+  tool_ha_service: true
+  tool_ha_config: true
+  tool_inventory: true
+  tool_health: true
+  tool_checkup: true
+  tool_print: true
+  inventory_enabled: true
+  inventory_every_min: 15
+  inventory_notify: true
+  inventory_investigate: true
+  inventory_phone_notify: false
+  health_enabled: true
+  health_every_min: 5
+  speedtest_daily: true
+  speedtest_time: "03:30"
+  speedtest_mb: 25
+  checkup_weekly: true
+  checkup_day: sun
+  checkup_time: "09:00"
+  checkup_notify: true
+  phone_approval: false
+  phone_approval_timeout_s: 300
+  doc_raw_fallback: true
+  daily_doc_jobs: 50
+  daily_doc_pages: 500
+  max_pages_per_job: 100
+  daily_receipts: 200
+schema:
+  gateway_secret: "password?"
+  enabled: bool
+  reset_pairing: bool
+  site: "url?"
+  router_type: "list(opnsense|pfsense|openwrt|unifi)?"
+  router_host: "str?"
+  router_port: "port?"
+  router_scheme: "list(https|http)?"
+  router_user: "str?"
+  router_password: "password?"
+  router_site: "str?"
+  router_cert_sha256: "match(^[0-9a-fA-F:]{64,95}$)?"
+  opnsense_host: "str?"
+  opnsense_key: "password?"
+  opnsense_secret: "password?"
+  tool_discovery: bool
+  tool_port_scan: bool
+  tool_http: bool
+  tool_probe: bool
+  tool_dns: bool
+  tool_snmp: bool
+  tool_speedtest: bool
+  tool_ha_states: bool
+  tool_opnsense: bool
+  tool_router: bool
+  tool_wol: bool
+  tool_ssh: bool
+  tool_ha_service: bool
+  tool_ha_config: bool
+  tool_inventory: bool
+  tool_health: bool
+  tool_checkup: bool
+  tool_print: bool
+  inventory_enabled: bool
+  inventory_every_min: "int(5,240)"
+  inventory_notify: bool
+  inventory_investigate: bool
+  inventory_phone_notify: bool
+  health_enabled: bool
+  health_every_min: "int(1,60)"
+  health_targets: "str?"
+  speedtest_daily: bool
+  speedtest_time: "match(^([01]?[0-9]|2[0-3]):[0-5][0-9]$)"
+  speedtest_mb: "int(1,100)"
+  checkup_weekly: bool
+  checkup_day: "list(mon|tue|wed|thu|fri|sat|sun)"
+  checkup_time: "match(^([01]?[0-9]|2[0-3]):[0-5][0-9]$)"
+  checkup_notify: bool
+  checkup_cert_hosts: "str?"
+  phone_approval: bool
+  phone_notify_service: "str?"
+  phone_approver_user_id: "str?"
+  phone_approval_timeout_s: "int(30,900)"
+  doc_raw_fallback: bool
+  daily_doc_jobs: "int(1,1000)"
+  daily_doc_pages: "int(1,10000)"
+  max_pages_per_job: "int(1,2000)"
+  daily_receipts: "int(1,5000)"
+  printer_ip: "str?"
+  doc_printer_ip: "str?"
+  doc_printer_model: "str?"
+  print_token: "password?"
