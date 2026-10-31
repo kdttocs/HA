@@ -19,7 +19,7 @@ import ipaddress, json, os, re, socket, subprocess, textwrap, threading, time, u
 import pairing
 
 os.umask(0o077)
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 COLS = 42
 PORT = 9100
 SCAN_EVERY = 600        # full search for a missing printer: every 10 minutes
@@ -175,8 +175,18 @@ def _port_open(ip, port, timeout=0.6):
         return False
 
 
-def is_page_printer(ip):
-    return _port_open(ip, 631, timeout=1)
+def is_page_printer(ip, woke=False):
+    """True when the host speaks IPP (631) or LPD-only page-printer services. A sleeping laser printer can open
+    port 9100 before its IPP service is back up, so after a 9100 connect we wait and ask twice with a long timeout.
+    When in doubt, treat it as a page printer: a missed receipt printer is harmless, a junk page is not."""
+    if _port_open(ip, 631, timeout=2):
+        return True
+    if woke:
+        for _ in range(2):
+            time.sleep(1.5)
+            if _port_open(ip, 631, timeout=3):
+                return True
+    return False
 
 
 def discover(nets=None):
@@ -184,7 +194,7 @@ def discover(nets=None):
     hits, lock = [], threading.Lock()
 
     def probe(ip):
-        if not _port_open(ip, PORT) or _port_open(ip, 631):
+        if is_page_printer(ip) or not _port_open(ip, PORT) or is_page_printer(ip, woke=True):
             return
         name = query_id(ip)
         with lock:
