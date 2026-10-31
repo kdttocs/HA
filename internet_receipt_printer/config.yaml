@@ -1,5 +1,5 @@
 name: Internet Receipt Printer
-version: "1.0.3"
+version: "1.0.4"
 slug: internet_receipt_printer
 description: Prints messages from your public web form (your own free Cloudflare relay) on a network ESC/POS receipt printer.
 url: https://github.com/kdttocs/HA/tree/main/internet_receipt_printer
