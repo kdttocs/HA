@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4
+- Fix: a sleeping laser printer could answer on port 9100 before its IPP service woke up, so the printer search
+  mistook it for a receipt printer and its probe printed a junk page (a sheet reading "IC"). The search now checks
+  IPP first, then again after waking the printer, and skips any host it is unsure about.
+
 ## 1.0.3
 - Message text now prints at normal height instead of double height, so longer messages and lists read naturally
   and use less paper.
