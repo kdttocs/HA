@@ -19,7 +19,7 @@ import ipaddress, json, os, re, socket, subprocess, textwrap, threading, time, u
 import pairing
 
 os.umask(0o077)
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 COLS = 42
 PORT = 9100
 SCAN_EVERY = 600        # full search for a missing printer: every 10 minutes
@@ -227,7 +227,7 @@ def receipt(j):
     t = lambda s: b.extend(str(s).encode("ascii", "replace"))   # noqa: E731
     b += b"\x1ba\x01\x1bE\x01\x1d!\x11"; t(str(j.get("title") or "INCOMING").upper()[:40] + "\n")
     b += b"\x1d!\x00\x1bE\x00"; t(f"#{int(j.get('number') or 0):04d}   {str(j.get('when') or '')[:30]}\n" + "-" * COLS + "\n\n")
-    b += b"\x1ba\x00\x1d!\x01"
+    b += b"\x1ba\x00\x1d!\x00"   # message text at normal size
     body = re.sub(r"[\x00-\x09\x0b-\x1f\x7f]", "", str(j.get("body") or ""))[:2000]   # no printer control codes from the web
     for para in body.split("\n")[:40]:
         t((textwrap.fill(para, COLS) if para else "") + "\n")

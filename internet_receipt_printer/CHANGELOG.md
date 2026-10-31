@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+- Message text now prints at normal height instead of double height, so longer messages and lists read naturally
+  and use less paper.
+
 ## 1.0.2
 - Relay template fix: a relay without `IP_SALT` used a fixed, public word to sign its bot-check challenges, so they
   could be made up in advance. It now falls back to its secret `RECEIPT_TOKEN`. Redeploy the relay to get the fix
